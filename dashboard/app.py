@@ -64,10 +64,13 @@ numeric_cols = [
     "FacLat", "FacLong", "FacTotalPenalties", "FacInspectionCount",
     "FacFormalActionCount", "FacQtrsWithNC",
 ]
+
 for c in numeric_cols:
     if c in df.columns:
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-
+        df[c] = pd.to_numeric(
+            df[c].astype(str).str.replace(r"[$,]", "", regex=True),
+            errors="coerce",
+        )
  
 st.caption(f"ECHO found {total} matching facilities; showing {len(df)}.")
 m1, m2, m3 = st.columns(3)

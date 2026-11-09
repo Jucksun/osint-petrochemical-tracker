@@ -1,3 +1,6 @@
 streamlit
 pandas
 requests
+duckdb
+lxml
+pytest

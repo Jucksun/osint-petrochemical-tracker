@@ -1,7 +1,19 @@
-"""End-to-end: EDGAR (filers, 10-K, Exhibit 21) + ECHO -> linked DuckDB + CSVs in out/.
+"""EDGAR (filers, 10-K, Exhibit 21) + ECHO -> linked DuckDB + CSVs in out/.
 
     export SEC_USER_AGENT="Your Name you@example.com"
     python -m dow.run [--max-queries 40] [--include-inactive]
+
+RUN THIS BELOW IN TERMINAL TO START
+
+pip install -r requirements.txt
+python -m pytest
+export SEC_USER_AGENT="Emma Leasure emma.l.leasure3@gmail.com"
+cd notebooks/dow-edgar-echo-demo
+python -m dow.run
+cd ../..
+python -m ingestion.build_db --db notebooks/dow-edgar-echo-demo/out/dow.duckdb
+cd notebooks/dow-edgar-echo-demo
+python -m streamlit run app.py
 """
 import argparse
 

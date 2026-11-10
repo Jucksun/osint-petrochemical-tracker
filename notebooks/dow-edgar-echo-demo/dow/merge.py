@@ -1,8 +1,5 @@
-"""Link ECHO facilities to the Dow family using Exhibit 21 names. Deterministic and explainable.
-
-Important: a CIK identifies an SEC *registrant*, not a corporate family. Most subsidiaries have
-no CIK. The family link comes from Exhibit 21 (a name list), so every link here is a NAME match,
-tagged with how strong it is.
+"""
+The CIK isnt usually shared across subsidiaries, though occasionally it is. BASICALLY, this is a name match, and then it's scored by how accurate it is.
 """
 import re
 

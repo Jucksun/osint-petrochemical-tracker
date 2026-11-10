@@ -47,12 +47,12 @@ def collect(queries: list[str], active_only=True) -> pd.DataFrame:
     for q in queries:
         try:
             frames.append(search_name(q, active_only))
-        except Exception as e:  # one bad query should not sink the run
+        except Exception as e: # Make sure that a single bad event does not hurt the reest of the program.
             print(f"ECHO query {q!r} failed: {e}")
         time.sleep(0.3)
     frames = [f for f in frames if not f.empty]
     if not frames:
         return pd.DataFrame()
     df = pd.concat(frames, ignore_index=True)
-    df = df.drop_duplicates(subset="RegistryID")  # first query wins
+    df = df.drop_duplicates(subset="RegistryID")# first try is the winner typically.
     return clean(df)

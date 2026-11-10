@@ -14,10 +14,10 @@ ULTIMATE_PARENT_CIK = 1751788  # Dow Inc. (confirmed from sec.gov filing URLs)
 SEED_CIKS = [
     1751788,# Dow Inc.
     29915,# The Dow Chemical Company
-    0000100790,# Union Carbide
+    
 ]
 # Add other Dow family registrants you discover! (for example Union Carbide)
-EXTRA_CIKS: list[int] = []
+EXTRA_CIKS: list[int] = [0000100790]
 
 # Distinctive name fragments for ECHO searches, in addition to Exhibit 21 names
 # Tokens are matched on word boundaries bc "DOW" will not match "WINDOW"

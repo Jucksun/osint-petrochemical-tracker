@@ -49,10 +49,17 @@ def check_answer(answer: str, sources: list[dict]) -> list[str]:
 
 def ask(con, question: str, k: int = 6, retrieve=None, chat_fn=None) -> dict:
     retrieve = retrieve or hybrid_search
-    chat_fn = chat_fn or llm.chat
     sources = retrieve(con, question, k)
     if not sources:
         return {"answer": NO_ANSWER, "sources": [], "warnings": []}
+    return answer_sources(question, sources, chat_fn)
+
+
+def answer_sources(question: str, sources: list[dict], chat_fn=None) -> dict:
+    """Answer a question from passages already retrieved by a search page."""
+    if not sources:
+        return {"answer": NO_ANSWER, "sources": [], "warnings": []}
+    chat_fn = chat_fn or llm.chat
     answer = chat_fn(build_messages(question, sources))
     return {"answer": answer, "sources": sources, "warnings": check_answer(answer, sources)}
 

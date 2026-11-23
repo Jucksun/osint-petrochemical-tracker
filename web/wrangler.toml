@@ -1,0 +1,22 @@
+name = "petrochemicals"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+
+# Serves petrochemicals.jacksonsobservatory.com. The zone must be on this Cloudflare account.
+routes = [{ pattern = "petrochemicals.jacksonsobservatory.com", custom_domain = true }]
+
+# Static site + data. Only /api/* runs the Worker; everything else is served straight from /public.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+# Workers AI. No API key needed; the binding is the credential.
+[ai]
+binding = "AI"
+
+[vars]
+# Tried in order; the first that answers wins. Change these without touching code.
+CHAT_MODELS = "@cf/zai-org/glm-4.7-flash,@cf/qwen/qwen3-30b-a3b-fp8,@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+# Optional: name of an AI Gateway to route through (adds logs + caching). Leave empty to skip.
+AI_GATEWAY = ""

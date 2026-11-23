@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PETROCHEM.EXE | JacksonOS</title>
+<meta name="description" content="Open-source intelligence tracker linking SEC filings to EPA enforcement records for the Dow corporate family.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23008080'/%3E%3Ccircle cx='8' cy='8' r='4' fill='%2333ff66'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav class="menubar">
+  <strong>JACKSONOS V2.1</strong>
+  <a href="https://jacksonsobservatory.com/index.html">Home</a>
+  <a href="https://jacksonsobservatory.com/terminal">AI Terminal</a>
+  <button type="button" id="btn-method">Methodology</button>
+  <span class="grow"></span>
+  <span id="asof" class="dim"></span>
+</nav>
+
+<main class="desktop">
+  <section class="win area-map" aria-label="Facility map">
+    <div class="title"><span>PETROCHEM.EXE : FACILITY MAP</span><span id="map-status" class="dim"></span></div>
+    <div class="body nopad map-wrap">
+      <div id="map" role="application" aria-label="Map of facilities"></div>
+      <div class="legend" aria-hidden="true">
+        <i style="background:#33ff66"></i>exact <i style="background:#ffb000"></i>prefix <i style="background:#ff5555"></i>token only
+        <span class="dim">&nbsp;size = penalties</span>
+      </div>
+      <button type="button" id="btn-clear-hi" class="hidden map-clear">Clear highlight</button>
+    </div>
+  </section>
+
+  <section class="win area-term" aria-label="AI analyst terminal">
+    <div class="title"><span>C:\PETROCHEM&gt; ANALYST</span><span id="model" class="dim">MODEL: --</span></div>
+    <div class="body term">
+      <div id="log" aria-live="polite"></div>
+      <form id="form" autocomplete="off">
+        <label for="prompt" class="prompt">C:\PETROCHEM&gt;</label>
+        <input id="prompt" type="text" maxlength="800" placeholder="ask about facilities, penalties, the 10-K..." autofocus>
+        <button type="submit" id="send">SEND</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="lower">
+    <section class="win" aria-label="Filters">
+      <div class="title"><span>FILTERS.EXE</span><button type="button" id="btn-csv" class="mini">Export CSV</button></div>
+      <div class="body filters">
+        <div id="tiers"></div>
+        <div class="row">
+          <select id="state" aria-label="State"><option value="">All states</option></select>
+          <input id="q" type="search" placeholder="name, city, entity, ID" aria-label="Search facilities">
+        </div>
+        <div id="count" class="dim"></div>
+        <ul id="list" class="list"></ul>
+      </div>
+    </section>
+    <section class="win" aria-label="Facility dossier">
+      <div class="title"><span>DOSSIER.DOC</span></div>
+      <div class="body" id="dossier"><p class="dim">Click a dot on the map or a row in the list.</p></div>
+    </section>
+  </div>
+</main>
+
+<dialog id="method">
+  <div class="win">
+    <div class="title"><span>METHODOLOGY.TXT</span><button type="button" class="mini" id="method-close">Close</button></div>
+    <div class="body prose">
+      <p><strong>Sources.</strong> SEC EDGAR (registrants, latest 10-K, Exhibit 21 subsidiary list) and EPA ECHO (facility compliance and penalty records).</p>
+      <p><strong>Linking.</strong> A CIK identifies an SEC registrant, not a corporate family, and most subsidiaries have no CIK. Facilities are tied to the family by <em>name</em> matching against Exhibit 21:</p>
+      <ul>
+        <li><b class="g">ex21_exact</b>: facility name equals a subsidiary name (strongest).</li>
+        <li><b class="a">ex21_prefix</b>: facility name starts with a subsidiary name (needs review).</li>
+        <li><b class="r">token_only</b>: only a distinctive word such as "Dow" matched. Weak; can be unrelated companies or oil wells.</li>
+      </ul>
+      <p><strong>Penalties</strong> are agency-reported and may be alleged, pending, appealed or settled. They are never summed across tiers.</p>
+      <p><strong>Map positions</strong> are ZIP-code centroids, so they are approximate and not the facility footprint.</p>
+      <p><strong>AI analyst.</strong> Runs on Cloudflare Workers AI. It can only state numbers returned by its tools, cites its sources, and its answers are automatically checked for unsupported dollar amounts and unknown IDs. A human should still verify anything important.</p>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

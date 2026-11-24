@@ -6,6 +6,8 @@ import { runTool, toolDocs } from "./tools.js";
 import { checkAnswer, NO_ANSWER } from "./verify.js";
 
 const MAX_ROUNDS = 4;
+// Whole-question time budget. The browser gives up at 90s, so finish well before that.
+const TIME_BUDGET_MS = 70_000;
 
 export function systemPrompt(meta) {
   const t = meta.tiers || {};
@@ -43,10 +45,13 @@ export async function runAgent(env, data, history, userMessage) {
   const ctx = { sources: [], actions: [], toolsUsed: [], corpus: [] };
   const messages = [{ role: "system", content: systemPrompt(data.meta) }, ...history, { role: "user", content: userMessage }];
   let answer = "", model = "";
+  const started = Date.now();
   for (let round = 0; round <= MAX_ROUNDS; round++) {
+    const left = TIME_BUDGET_MS - (Date.now() - started);
+    if (left < 8_000) { answer = "That question took too long to work through. Try a narrower question."; break; }
     const last = round === MAX_ROUNDS;
     if (last) messages.push({ role: "user", content: "Tool budget used. Give the final answer now using only the results above. Do not call tools." });
-    const res = await chat(env, messages);
+    const res = await chat(env, messages, { timeoutMs: Math.min(25_000, left) });
     model = res.model;
     const calls = last ? [] : parseToolCalls(res.text);
     if (last && /<tool>/i.test(res.text)) { answer = "I ran out of lookup steps before finishing. Try a narrower question."; break; }

@@ -22,13 +22,20 @@ export function clean(text) {
   return text.replace(/<think>[\s\S]*?<\/think>/gi, "").replace(/<think>[\s\S]*$/i, "").trim();
 }
 
-export async function chat(env, messages, { maxTokens = 1200 } = {}) {
+// Give up on a model that has not answered in time and try the next one.
+function withTimeout(promise, ms, label) {
+  let t;
+  const timer = new Promise((_, reject) => { t = setTimeout(() => reject(new Error(`timed out after ${Math.round(ms / 1000)}s`)), ms); });
+  return Promise.race([promise, timer]).finally(() => clearTimeout(t));
+}
+
+export async function chat(env, messages, { maxTokens = 1200, timeoutMs = 25_000 } = {}) {
   const models = String(env.CHAT_MODELS || DEFAULT_MODELS).split(",").map((s) => s.trim()).filter(Boolean);
   const opts = env.AI_GATEWAY ? { gateway: { id: env.AI_GATEWAY } } : undefined;
   const errors = [];
   for (const model of models) {
     try {
-      const res = await env.AI.run(model, { messages, max_tokens: maxTokens, temperature: 0.1 }, opts);
+      const res = await withTimeout(env.AI.run(model, { messages, max_tokens: maxTokens, temperature: 0.1 }, opts), timeoutMs);
       const text = clean(extractText(res));
       if (text) return { text, model };
       errors.push(`${model}: empty response`);

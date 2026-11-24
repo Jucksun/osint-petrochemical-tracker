@@ -7,7 +7,7 @@ const money = (n) => "$" + Math.round(n || 0).toLocaleString("en-US");
 const S = { facs: [], byId: new Map(), meta: null, map: null, ready: false, tiers: new Set(["ex21_exact", "ex21_prefix"]),
   state: "", q: "", sel: null, hi: [], history: [], busy: false, cmds: [], ci: -1 };
 
-/* ---------- data + filters ---------- */
+/* ---------- data + filters ---------- (test deploy : 1) */
 const visible = () => {
   const q = S.q.trim().toLowerCase(), hi = new Set(S.hi);
   return S.facs.filter((f) => hi.has(f.id) || (S.tiers.has(f.tier) && (!S.state || f.state === S.state) &&

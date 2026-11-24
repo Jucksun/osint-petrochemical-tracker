@@ -61,7 +61,7 @@ export default {
     try {
       if (url.pathname === "/api/chat") return req.method === "POST" ? await chat(req, env, url) : json({ error: "Use POST." }, 405, { allow: "POST" });
       if (url.pathname === "/api/export.csv") return await csv(req, env, url);
-      if (url.pathname === "/api/health") { const d = await loadData(env, req.url); return json({ ok: true, ...d.meta.counts, models: env.CHAT_MODELS }); }
+      if (url.pathname === "/api/health") { const d = await loadData(env, req.url); return json({ ok: true, ...d.meta.counts, models: env.CHAT_MODELS, ai_binding: !!env.AI }); }
       if (url.pathname.startsWith("/api/")) return json({ error: "Not found." }, 404);
     } catch (e) {
       return json({ error: "Server error.", detail: String(e?.message || e).slice(0, 300) }, 500);

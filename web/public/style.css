@@ -1,4 +1,4 @@
-:root{--blue:#0000aa;--face:#c0c0c0;--hi:#fff;--sh:#808080;--dk:#404040;--navy:#000080;--ink:#000;
+:root{--blue:#000080;--face:#c0c0c0;--hi:#fff;--sh:#808080;--dk:#404040;--navy:#000080;--ink:#000;
 --g:#33ff66;--a:#ffb000;--r:#ff5555;--c:#5fd7ff;--mono:"Courier New","Lucida Console",ui-monospace,monospace;--ui:Tahoma,"MS Sans Serif",Verdana,sans-serif}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}

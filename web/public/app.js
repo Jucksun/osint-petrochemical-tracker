@@ -176,7 +176,8 @@ async function send(text) {
   const wait = addMsg("bot", "ANALYST", '<span class="thinking">PROCESSING</span>');
   try {
     const r = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ message: text, history: S.history.slice(-6) }) });
+      body: JSON.stringify({ message: text, history: S.history.slice(-6) }), signal: AbortSignal.timeout(90_000) })
+      .catch((e) => { throw new Error(e?.name === "TimeoutError" ? "The analyst took too long to answer. Try again or ask a narrower question." : "Could not reach the analyst. Check your connection."); });
     const j = await r.json().catch(() => ({}));
     wait.remove();
     if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
@@ -218,6 +219,11 @@ async function boot() {
   $("#asof").textContent = `Exhibit 21 as of ${S.meta.ex21_as_of || "n/a"} · data built ${S.meta.generated_at.slice(0, 10)}`;
   $("#state").innerHTML += [...new Set(S.facs.map((f) => f.state).filter(Boolean))].sort().map((s) => `<option>${esc(s)}</option>`).join("");
   drawTiers(); refresh(); initMap();
+  // Show the primary model right away instead of "--" until the first answer.
+  fetch("/api/health").then((r) => r.json()).then((h) => {
+    const first = String(h.models || "").split(",")[0].trim();
+    if (first && $("#model").textContent === "MODEL: --") $("#model").textContent = "MODEL: " + first.split("/").pop().toUpperCase();
+  }).catch(() => {});
 
   $("#tiers").addEventListener("change", (e) => { const t = e.target.dataset.tier; if (!t) return; e.target.checked ? S.tiers.add(t) : S.tiers.delete(t); refresh(); });
   $("#state").addEventListener("change", (e) => { S.state = e.target.value; refresh(); });

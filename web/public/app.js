@@ -38,7 +38,7 @@ function initMap() {
   if (!window.maplibregl) { $("#map").innerHTML = '<div class="maperr">MAP LIBRARY COULD NOT LOAD (offline or blocked). The list, dossier and analyst still work.</div>'; return; }
   const map = S.map = new maplibregl.Map({ container: "map", center: [-96, 37.5], zoom: 3.3, attributionControl: { compact: true },
     style: { version: 8, sources: { base: { type: "raster", tileSize: 256, attribution: "© OpenStreetMap contributors © CARTO",
-      tiles: ["a", "b", "c", "d"].map((s) => `https://${s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`) } },
+            tiles: ["https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=cb1_5ets_1_2da3e94b458f78a14e709fcb"] } },
       layers: [{ id: "base", type: "raster", source: "base" }] } });
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   const color = ["match", ["get", "tier"], "ex21_exact", TIER_COLOR.ex21_exact, "ex21_prefix", TIER_COLOR.ex21_prefix, TIER_COLOR.token_only];

@@ -19,10 +19,32 @@ tiers = st.sidebar.multiselect("Link confidence", ["ex21_exact", "ex21_prefix", 
                                default=["ex21_exact", "ex21_prefix"])
 view = df[df["tier"].isin(tiers)]
 
+query = st.text_input(
+    "Search facilities",
+    placeholder="Name, company, city, state code (MI), address, ZIP, or Registry ID",
+).strip()
+
+if query and not view.empty:
+    states = df.get("FacState")
+    state_matches = (
+        states.astype("string").str.strip().str.upper().eq(query.upper())
+        if states is not None else None
+    )
+    if state_matches is not None and state_matches.any():
+        view = view.loc[state_matches.loc[view.index]]
+    else:
+        search_fields = ["FacName", "matched_entity", "FacStreet", "FacCity", "FacCounty",
+                         "FacZip", "RegistryID"]
+        search_data = view.reindex(columns=search_fields).astype("string")
+        matches = search_data.apply(
+            lambda column: column.str.contains(query, case=False, regex=False, na=False)
+        )
+        view = view.loc[matches.any(axis=1)]
+
 c1, c2, c3 = st.columns(3)
 c1.metric("Facilities shown", len(view))
 if "FacTotalPenalties" in view:
-    c2.metric("Penalties (selected tiers)", f"${view['FacTotalPenalties'].sum():,.0f}")
+    c2.metric("Penalties", f"${view['FacTotalPenalties'].sum():,.0f}")
 c3.metric("Needing review", int(view["needs_review"].sum()))
 
 st.subheader("By link confidence")
